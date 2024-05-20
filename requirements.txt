@@ -1,9 +1,9 @@
-asgiref
 Flask
-flask_sqlalchemy
+Flask_sqlalchemy
+psycopg2-binary
+asgiref
 jinja2
 postgres
-psycopg2-binary
 python-dotenv
 requests
 requests_oauthlib

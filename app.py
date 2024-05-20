@@ -27,7 +27,6 @@ db.init_app(app)
 with app.app_context():
     db.create_all()
 
-
 # Initialize the queue manager
 queue_manager = QueueManager()
 
@@ -49,7 +48,7 @@ def create_oauth_session(state=None):
         'streaming' 
     ]
     oauth_session = OAuth2Session(client_id=client_id, redirect_uri=redirect_uri, scope=scope, state=state)
-    oauth_session.verify = certifi.where()  # Use certifi for SSL verification
+    oauth_session.verify = certifi.where()  # Uses certifi for SSL verification
     return oauth_session
 
 def refresh_access_token(refresh_token):
@@ -122,6 +121,9 @@ def callback():
         session['oauth_token'] = token  # Save the token in the session
         session['logged_in'] = True
         oauth_session.token = token
+        
+        with app.app_context():
+            db.create_all()
 
         return redirect(url_for('index'))
     except Exception as e:

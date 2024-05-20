@@ -120,7 +120,11 @@ def callback():
         oauth_session.token = token
         
         with app.app_context():
-            db.create_all()
+            try:
+                db.create_all()
+            except IntegrityError:
+                db.session.rollback()
+
 
         return redirect(url_for('index'))
     except Exception as e:

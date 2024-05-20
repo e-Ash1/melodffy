@@ -10,6 +10,9 @@ import requests
 import certifi  
 import os
 
+# Load environment variables from a .env file
+load_dotenv()
+
 # Initialize the Flask application & Vercel Entry Point
 app = Flask(__name__)
 asgi_app = WsgiToAsgi(app) 
@@ -25,8 +28,7 @@ queue_manager = QueueManager()
 # Set up logging
 logging.basicConfig(level=logging.INFO)  
 
-# Load environment variables from a .env file
-load_dotenv()
+
 
 def create_oauth_session(state=None):
     """Creates an OAuth2 session for Spotify API authentication."""

@@ -24,9 +24,6 @@ app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'definately_not_a_password')
 # Initializes the database with the Flask app
 db.init_app(app)  
 
-with app.app_context():
-    db.create_all()
-
 # Initialize the queue manager
 queue_manager = QueueManager()
 

@@ -1,5 +1,6 @@
 Flask
 Flask_sqlalchemy
+psycopg2
 psycopg2-binary
 asgiref
 jinja2

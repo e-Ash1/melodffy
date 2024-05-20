@@ -1,6 +1,8 @@
 Flask
 Flask_SQLAlchemy
 psycopg2-binary
+gunicorn
+uvicorn
 asgiref
 jinja2
 python-dotenv

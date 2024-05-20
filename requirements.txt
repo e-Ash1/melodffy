@@ -1,10 +1,8 @@
 Flask
-Flask_sqlalchemy
-psycopg2
+Flask_SQLAlchemy
 psycopg2-binary
 asgiref
 jinja2
-postgres
 python-dotenv
 requests
 requests_oauthlib

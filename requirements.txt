@@ -1,0 +1,10 @@
+asgiref
+Flask
+flask_sqlalchemy
+jinja2
+postgres
+psycopg2-binary
+python-dotenv
+requests
+requests_oauthlib
+certifi

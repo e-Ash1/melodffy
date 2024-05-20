@@ -1,0 +1,336 @@
+@font-face {
+    font-family: 'The Bold Font';
+    src: url('/static/fonts/THE_BOLD_FONT_OTF.otf');
+}
+
+@keyframes slideIn {
+    from { transform: translateY(100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes rotate {
+    from {
+        transform: rotate(0deg) scale(var(--scale)); 
+    }
+    to {
+        transform: rotate(360deg) scale(var(--scale)); 
+    }
+}
+
+@keyframes rotate-hover {
+    from {
+        transform: rotate(0deg) scale(1.05);
+    }
+    to {
+        transform: rotate(360deg) scale(1.05);
+    }
+}
+
+.logo-animate {
+    --scale: 1; 
+    animation: rotate 20s linear infinite;
+    transition: transform 0.3s ease-in-out; 
+    transform: scale(var(--scale)); 
+}
+
+.logo-animate:hover {
+    --scale: 1.075; 
+}
+
+body {
+    --bg-color: #f9fafb; 
+    --text-color: #111827; 
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+body.dark {
+    --bg-color: #111827; 
+    --text-color: #f9fafb; 
+    background-color: var(--bg-color);
+    color: var(--text-color);
+}
+
+nav {
+    font-family: 'The Bold Font';
+    position: fixed;
+    padding: 0.75rem 1.5rem;
+    border-color: #2D3748;
+    min-height: 60px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    left: 0; 
+    right: 0;
+    top: 0;
+    transition: top 0.5s ease, background-color 0.3s ease, color 0.3s ease;
+    width: 100%; 
+    z-index: 10;
+}
+
+body, .nav-text, .footer-text, #search-query, #search-type {
+    transition: color 0.3s ease, background-color 0.3s ease;
+}
+
+.hidden-nav {
+    top: -100%;
+}
+
+#nav-container {
+    display: flex;
+    background-color: #1a202c;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding-left: 2rem; 
+    padding-right: 2rem; 
+}
+
+#logo-text {
+    font-size: 1.25rem; 
+    font-weight: bold;
+    flex-shrink: 0; 
+    display: flex;
+    align-items: center; 
+    justify-content: center; 
+    height: 3.5rem; 
+}
+
+#main-container {
+    z-index: 1;
+    position: relative;
+    margin-top: 60px;
+    padding-top: 60px;
+    background-color: transparent;
+}
+
+
+.toggle-button {
+    position: relative;
+    display: inline-block;
+    width: 40px; 
+    height: 20px; 
+}
+
+.toggle-checkbox {
+    display: none;
+}
+
+.slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #fbff00; 
+    border-radius: 20px; 
+    transition: background-color 0.4s;
+}
+
+.slider:before {
+    content: "";
+    position: absolute;
+    top: 1px;
+    left: 1px; 
+    width: 18px;
+    height: 18px;
+    background-color: white;
+    border-radius: 50%;
+    transition: transform 0.4s;
+}
+
+.toggle-checkbox:checked + .slider {
+    background-color: #f9a825; 
+}
+
+.toggle-checkbox:checked + .slider:before {
+    transform: translateX(19px); 
+}
+
+#search-results {
+    position: relative;
+    z-index: 2; 
+    width: 100%;
+    padding: 20px;
+    box-sizing: border-box; 
+}
+
+#search-query, #search-type {
+    background-color: #374151;
+    color: var(--text-color);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark #search-query, body.dark #search-type {
+    color: #f9fafb; 
+}
+
+.nav-text, .footer-text {
+    color: #1a202c; 
+    transition: color 0.4s;
+}
+
+body.dark .nav-text, body.dark .footer-text {
+    color: #f9fafb; 
+}
+
+
+/* Footer Stuff */
+
+.footer-toggle {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background-color: #1f2937;
+    color: white;
+    border: none;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
+    z-index: 110; 
+    cursor: pointer;
+}
+
+
+#footer-album-art {
+    border: 0.5px solid black; 
+    border-radius: 50%; 
+    padding: 1px; 
+
+}
+
+#footer-container {
+    font-family: 'The Bold Font';
+    display: flex; 
+    align-items: center;
+    justify-content: space-between; 
+    padding-left: 6rem; 
+    padding-right: 6rem; 
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: -100px; 
+    width: 100%;
+    transition: bottom 0.5s ease, background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+    z-index: 100; 
+    background-color: #1a202c; 
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+    color: #f9fafb; 
+    border-top: 1px solid #2d3748; 
+}
+
+#progress-bar {
+    height: 100%;
+    background-color: #10b981; 
+    width: 0%; 
+    transition: width 0.25s linear; 
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+.time-display {
+    position: absolute;
+    top: -25px;
+    color: #ffffff;
+    font-size: 12px;
+    transition: all 0.25s ease-in-out;
+}
+
+.time-display.left-0 {
+    left: 0;
+}
+
+.time-display.right-0 {
+    right: 0;
+    text-align: right;
+}
+
+.player-controls {
+    display: flex;
+    align-items: center; 
+    gap: 8px; 
+}
+
+.control-btn, .volume-slider {
+    cursor: pointer; 
+    background: none;
+    border: none;
+    outline: none;
+}
+
+.control-btn {
+    width: 40px; 
+    height: 40px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: transparent; 
+    fill: #ffffff; 
+}
+
+.volume-slider {
+    width: 100px;
+    height: 2px;
+    appearance: none;
+    background-color: #ccc;
+    outline: none;
+  }
+
+  .volume-slider::-webkit-slider-thumb {
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    background-color: #10b981;
+    border-radius: 50%;
+  }
+
+  .volume-slider::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    background-color: #10b981;
+    border-radius: 50%;
+  }
+
+
+.control-button i {
+    transition: color 0.3s ease;
+}
+
+.control-button:hover i {
+    color: var(--accent);
+}
+
+
+.button-effect {
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    background: transparent;
+    border: none;
+    color: inherit;
+    transition: transform 0.1s ease;
+}
+.button-effect:active {
+    transform: scale(0.9); 
+}
+
+.like-btn:hover, .play-btn:hover {
+    filter: brightness(1.2);
+}
+.like-btn:active, .play-btn:active {
+    filter: brightness(0.8);
+}
+
+.track-id, .info, .like-button {
+    margin-right: 12px;
+}
+
+.like-button {
+    margin-left: auto;
+}
+
+.footer-toggle, .flex-auto {
+    margin-right: auto;
+    margin-left: auto;
+}

@@ -19,8 +19,14 @@ asgi_app = WsgiToAsgi(app)
 
 # Configure the database URI
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
-db.init_app(app)  # Initializes the database with the Flask app
 app.config['SECRET_KEY'] = os.getenv('SECRET_KEY', 'definately_not_a_password')
+
+# Initializes the database with the Flask app
+db.init_app(app)  
+
+with app.app_context():
+    db.create_all()
+
 
 # Initialize the queue manager
 queue_manager = QueueManager()
@@ -116,9 +122,6 @@ def callback():
         session['oauth_token'] = token  # Save the token in the session
         session['logged_in'] = True
         oauth_session.token = token
-
-        with app.app_context():
-            db.create_all()
 
         return redirect(url_for('index'))
     except Exception as e:

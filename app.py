@@ -12,8 +12,6 @@ from blueprints.queue import queue_bp
 
 # --- Create the Flask app in global scope ---
 app = Flask(__name__)
-app.config['ENV'] = 'development'
-app.config['DEBUG'] = True
 
 CORS(app, supports_credentials=True)
 
@@ -32,9 +30,6 @@ app.register_blueprint(track_controls_bp)
 app.register_blueprint(spotify_bp, url_prefix='/spotify')
 app.register_blueprint(queue_bp, url_prefix='/queue')
 
-
-with app.app_context():
-    db.create_all()  
     
 # --- Runs the app ---
 if __name__ == '__main__':

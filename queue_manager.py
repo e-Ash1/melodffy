@@ -1,59 +1,105 @@
 import logging
+import json
+import urllib.parse
 
+# ------------------------------------------------------------------------
+# 0. Server Queue Management System:
+# ------------------------------------------------------------------------
 class QueueManager:
     def __init__(self):
         self.queue = []
         self.current_index = -1
-        logging.debug("QueueManager initialized with an empty queue and index set to -1.")
 
     def set_queue(self, tracks):
+        """Replace the entire queue with `tracks` (list of dicts or strings)."""
         self.queue = tracks
-        self.current_index = 0 if tracks else -1  # Reset the current index
-        logging.debug(f"Set queue to {tracks}. Current queue: {self.queue}")
-
-    def add_to_queue(self, tracks):
-        # Flatten the list if it's a list of lists
-        if tracks and isinstance(tracks[0], list):
-            tracks = [track for sublist in tracks for track in sublist]
+        self.current_index = 0 if tracks else -1
         
-        # Extend sthe existing queue with the new tracks
-        self.queue.extend(tracks)
-        if self.current_index == -1:  # If the queue was previously empty, update the index
-            self.current_index = 0
-        logging.debug(f"Added tracks {tracks} to queue. Current queue: {self.queue}")
+    def add_to_queue(self, tracks):
+        """
+        Add `tracks` to the current queue.
+        - If front end sends raw JSON as a dict, we store it directly.
+        - If front end sends URL-encoded JSON strings, we decode + parse each one.
+        """
+        parsed_tracks = []
+        for t in tracks:
+            # If it's already a dict, just add it
+            if isinstance(t, dict):
+                parsed_tracks.append(t)
+            elif isinstance(t, str):
+                try:
+                    # Step 1: URL-decode the string
+                    decoded_str = urllib.parse.unquote(t)
+                    # Step 2: parse JSON
+                    track_dict = json.loads(decoded_str)
+                    parsed_tracks.append(track_dict)
+                except (json.JSONDecodeError, ValueError):
+                    logging.error(f"Could not parse track string: {t}")
+            else:
+                # Edge-case:
+                parsed_tracks.append(t)
 
-    def remove_from_queue(self, track_id):
-        initial_length = len(self.queue)
-        self.queue = [track for track in self.queue if track['id'] != track_id]
-        if self.current_index >= initial_length:
-            self.current_index = len(self.queue) - 1
+        self.queue.extend(parsed_tracks)
+
+        # If queue was empty before, set current_index to 0
         if self.current_index == -1 and self.queue:
             self.current_index = 0
-        logging.debug(f"Removed track ID {track_id} from queue. Current queue: {self.queue}")
+
+    def remove_from_queue(self, track_id: str) -> bool:
+        """
+        Remove a track with matching 'id' from the queue.
+        If the track is stored as a dict, compare track['id'] directly.
+        If the track is stored as a URL-encoded JSON string, decode + parse first.
+        """
+        initial_length = len(self.queue)
+        new_queue = []
+
+        for track in self.queue:
+            if isinstance(track, str):
+                try:
+                    decoded_str = urllib.parse.unquote(track)
+                    track = json.loads(decoded_str)
+                except (json.JSONDecodeError, ValueError) as e:
+                    # Skips invalid track
+                    continue
+
+            # Only keep the track if its 'id' doesn't match
+            if track.get('id') != track_id:
+                new_queue.append(track)
+
+        self.queue = new_queue
+
+        # If something was removed, adjust current_index
+        if len(self.queue) < initial_length:
+            if self.current_index >= len(self.queue):
+                self.current_index = len(self.queue) - 1
+            if not self.queue:
+                self.current_index = -1
+            return True
+        else:
+            return False
 
     def next_track(self):
+        """Advance to the next track in the queue (if any) and return it."""
         if self.current_index + 1 < len(self.queue):
             self.current_index += 1
-            logging.debug(f"Moved to next track. Current index is now {self.current_index}.")
             return self.queue[self.current_index]
         else:
-            logging.debug("No next track available. Reached the end of the queue.")
             return None
 
     def prev_track(self):
+        """Go back to the previous track (if any) and return it."""
         if self.current_index > 0:
             self.current_index -= 1
-            logging.debug(f"Moved to previous track. Current index is now {self.current_index}.")
             return self.queue[self.current_index]
         else:
-            logging.debug("No previous track available. At the start of the queue.")
             return None
 
     def get_queue(self):
-        logging.debug(f"Current queue: {self.queue}")
+        """Return the entire current queue."""
         return self.queue
 
     def clear_queue(self):
+        """Clear out the entire queue."""
         self.queue = []
         self.current_index = -1
-        logging.debug("Cleared the queue and reset the index to -1.")

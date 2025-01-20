@@ -219,15 +219,70 @@ body.dark .nav-text, body.dark .footer-text {
     border-top: 1px solid #2d3748; 
 }
 
-#progress-bar {
-    height: 100%;
-    background-color: #10b981; 
-    width: 0%; 
-    transition: width 0.25s linear; 
-    position: absolute;
-    left: 0;
-    top: 0;
+.progress-bar-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
 }
+
+.progress-track {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background-color: #808080;
+    z-index: 1;
+}
+
+.progress-fill {
+    position: absolute;
+    height: 100%;
+    width: 0%;
+    background-color: #6B46C1;
+    z-index: 2;
+    transition: width 0.1s ease;
+}
+
+.progress-thumb {
+    position: absolute;
+    width: 16px;
+    height: 16px;
+    background-color: white;
+    border-radius: 50%;
+    z-index: 3;
+    transition: transform 0.1s ease;
+    transform: translateX(-50%);
+}
+
+.progress-thumb:hover {
+    transform: scale(1.2) translateX(-50%);
+}
+
+#progress-bar {
+    -webkit-appearance: none;
+    appearance: none;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 4;
+    opacity: 0;
+    cursor: pointer;
+}
+
+
+.time-display {
+    font-size: 12px;
+    position: absolute;
+    top: -20px;
+    color: #000;
+    z-index: 3;
+}
+
+.dark .time-display {
+    color: #fff;
+}
+
 
 .time-display {
     position: absolute;
@@ -252,7 +307,7 @@ body.dark .nav-text, body.dark .footer-text {
     gap: 8px; 
 }
 
-.control-btn, .volume-slider {
+.control-btn {
     cursor: pointer; 
     background: none;
     border: none;
@@ -269,28 +324,38 @@ body.dark .nav-text, body.dark .footer-text {
     fill: #ffffff; 
 }
 
-.volume-slider {
-    width: 100px;
-    height: 2px;
+#volume-slider {
+    -webkit-appearance: none;
     appearance: none;
-    background-color: #ccc;
+    height: 100%;
+    background: linear-gradient(to right, #10b981 50%, #808080 50%); 
+    border-radius: 9999px;
     outline: none;
-  }
+    overflow: hidden;
+}
 
-  .volume-slider::-webkit-slider-thumb {
+#volume-slider::-webkit-slider-thumb {
+    -webkit-appearance: none;
     appearance: none;
-    width: 16px;
-    height: 16px;
-    background-color: #10b981;
+    width: 12px;
+    height: 12px;
+    background: #10b981;
     border-radius: 50%;
-  }
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+}
 
-  .volume-slider::-moz-range-thumb {
-    width: 16px;
-    height: 16px;
-    background-color: #10b981;
+#volume-slider::-moz-range-thumb {
+    width: 12px;
+    height: 12px;
+    background: #10b981;
     border-radius: 50%;
-  }
+    cursor: pointer;
+    position: relative;
+    z-index: 2;
+}
+
 
 
 .control-button i {

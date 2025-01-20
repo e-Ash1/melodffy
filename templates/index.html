@@ -9,59 +9,74 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-          darkMode: 'class', 
-          theme: {
-            fontFamily:{
-                tbf: ['The Bold Font']
-            },
-            extend: {
-                colors: {
-                'custom-yellow': '#f9a825',
-                transitionProperty: {
-                'colors': 'background-color, border-color, color, fill, stroke',
+            darkMode: 'class',
+            theme: {
+                fontFamily: {
+                    tbf: ['The Bold Font']
                 },
-                background: {
-                  DEFAULT: '#f9fafb', // Light Gray
-                  dark: '#1a202c' // Dark-Gray
-                },
-                primary: {
-                  DEFAULT: '#6366f1', // Indigo
-                  dark: '#818cf8' // Lighter Indigo
-                },
-                text: {
-                  DEFAULT: '#111827', // Very dark gray for text in light mode
-                  dark: '#f9fafb' // White for text in dark mode
-                },
-                accent: {
-                  DEFAULT: '#10b981', // Emerald green for accents in light mode
-                  dark: '#34d399' // Lighter green for accents in dark mode
+                extend: {
+                    colors: {
+                        'custom-yellow': '#f9a825',
+                        transitionProperty: {
+                            'colors': 'background-color, border-color, color, fill, stroke',
+                        },
+                        background: {
+                            DEFAULT: '#f9fafb', // Light Gray
+                            dark: '#1a202c' // Dark-Gray
+                        },
+                        primary: {
+                            DEFAULT: '#6366f1', // Indigo
+                            dark: '#818cf8' // Lighter Indigo
+                        },
+                        text: {
+                            DEFAULT: '#111827', // Very dark gray for text in light mode
+                            dark: '#f9fafb' // White for text in dark mode
+                        },
+                        accent: {
+                            DEFAULT: '#10b981', // Emerald green for accents in light mode
+                            dark: '#34d399' // Lighter green for accents in dark mode
+                        }
+                    }
                 }
-              }
             }
-          }
         };
-      </script>
+    </script>
 </head>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.21/lodash.min.js"></script>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Loads jQuery, Spotify Web Playback SDK,  and Lodash libraries -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+        integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo="
+        crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/lodash@4.17.21/lodash.min.js"></script>
 <script src="https://sdk.scdn.co/spotify-player.js"></script>
-<script src="../static/js/api.js"></script>
+
+<!-- Readies the onSpotifyWebPlaybackSDKReady in api.js -->
+<script type="module" src="{{ url_for('static', filename='js/api.js') }}"></script>
+
+<!-- Loads the other JavaScript modules -->
+<script type="module" src="{{ url_for('static', filename='js/utils.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/queueManager.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/player.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/playerTrack.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/apiRequests.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/uiUpdates.js') }}"></script>
+<script type="module" src="{{ url_for('static', filename='js/generateHTML.js') }}"></script>
+
 <body class="dark">
     <header>
         <nav id="nav-container" class="flex items-center justify-between w-full fixed top-0 left-0 z-10 p-1.5 px-4 sm:px-6 lg:px-8 h-15 bg-gray-900 text-white">
             <a href="/" id="logo-text" class="text-xl leading-none h-14 w-14 ml-52">MELODFFY</a>
             <div class="flex items-center space-x-4 ml-4">
-                <a href="/" class="py-1.5 px-4 rounded-md text-sm font-medium text-gray-300 hover:bg-custom-yellow hover:text-white transition duration-300 ease-in transform hover:scale-105 active:scale-95">Home</a>
-                {% if session['logged_in'] %}
+                <a href="/" class="py-1.5 px-4 rounded-md text-sm font-medium hover:bg-custom-yellow hover:text-white transition duration-300 ease-in transform hover:scale-105 active:scale-95">Home</a>
+                {% if session['user_id'] %}
                 <form class="flex items-center space-x-4">
                     <select id="search-type" class="bg-gray-700 text-white px-3 py-1.5 rounded-md text-sm">
                         <option value="track">Track</option>
                     </select>
-                    <input type="text" id="search-query" class="bg-gray-700 text-white px-3 py-1.5 rounded-md text-sm" placeholder="Search...">
+                    <input type="text" id="search-query" class="text-white px-3 py-1.5 rounded-md text-sm" placeholder="Search...">
                 </form>
-                <button onclick="location.href='/logout';" class="py-1.5 px-4 rounded-md text-sm font-medium text-gray-300 hover:bg-custom-yellow hover:text-white transition duration-300 ease-in transform hover:scale-105 active:scale-95">Logout</button>
+                <button onclick="location.href='/auth/logout';" class="py-1.5 px-4 rounded-md text-sm font-medium hover:bg-custom-yellow hover:text-white transition duration-300 ease-in transform hover:scale-105 active:scale-95">Logout</button>
                 {% else %}
-                <button onclick="location.href='/login';" class="py-1.5 px-4 rounded-md text-sm font-medium text-gray-300 hover:bg-custom-yellow hover:text-white transition duration-300 ease-in transform hover:scale-105 active:scale-95">Login</button>
+                <button onclick="location.href='/auth/login';" class="py-1.5 px-4 rounded-md text-sm font-medium hover:bg-custom-yellow hover:text-white transition duration-300 ease-in transform hover:scale-105 active:scale-95">Login</button>
                 {% endif %}
                 <div class="toggle-button">
                     <input type="checkbox" id="theme-toggle" class="toggle-checkbox">
@@ -75,66 +90,120 @@
             <!-- Search results will be dynamically injected here -->
         </div>
     </main>
-    <section id="welcome-section" class="font-tbf {% if session['logged_in'] %}bg-opacity-20 bg-transparent{% else %}bg-opacity-20 bg-transparent{% endif %} p-8 rounded-xl text-center flex flex-col items-center justify-center">
-        <h2 class="text-3xl font-bold text-gray-900 dark:text-white font-family-TheBoldFont">Welcome to Melodffy!</h2>
-        {% if session['logged_in'] %}
-            <p class="text-gray-800 dark:text-white mt-4 text-opacity-90 font-semibold font-family-TheBoldFont">Dive into your personal music experience.</p>
-            <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo-animate w-40 h-40 mt-4 border-4 dark:border-white border-gray-900 rounded-full hover-effect" onclick="window.location.href='/logout';">
+
+    <!-- Example of toggling styles/behavior based on session['user_id'] -->
+    <section id="welcome-section"
+             class="font-tbf {% if session['user_id'] %} bg-opacity-20 bg-transparent {% else %} bg-opacity-20 bg-transparent {% endif %} p-8 rounded-xl text-center flex flex-col items-center justify-center">
+        <h2 class="text-3xl font-bold text-gray-900 dark:text-white font-family-TheBoldFont">
+            Welcome to Melodffy!
+        </h2>
+        {% if session['user_id'] %}
+            <p class="text-gray-800 dark:text-white mt-4 text-opacity-90 font-semibold font-family-TheBoldFont">
+                Dive into your personal music experience.
+            </p>
+            <img src="{{ url_for('static', filename='images/logo.png') }}"
+                 class="logo-animate w-40 h-40 mt-4 border-4 dark:border-white border-gray-900 rounded-full hover-effect"
+                 onclick="window.location.href='/auth/logout';">
         {% else %}
-            <p class="text-gray-800 dark:text-white mt-4 text-opacity-90 font-semibold font-family-TheBoldFont">Join us and discover new dimensions of music.</p>
-            <img src="{{ url_for('static', filename='images/logo.png') }}" class="logo-animate w-40 h-40 mt-4 border-4 dark:border-white border-gray-900 rounded-full hover-effect" onclick="window.location.href='/login';">
+            <p class="text-gray-800 dark:text-white mt-4 text-opacity-90 font-semibold font-family-TheBoldFont">
+                Join us and discover new dimensions of music.
+            </p>
+            <img src="{{ url_for('static', filename='images/logo.png') }}"
+                 class="logo-animate w-40 h-40 mt-4 border-4 dark:border-white border-gray-900 rounded-full hover-effect"
+                 onclick="window.location.href='/auth/login';">
         {% endif %}
     </section>
-    <footer id="footer-container" class="fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-800 flex justify-between items-center p-4">
-        <div class="track-buttons flex items-center space-x-4">
-            <button id="queued-tracks-btn" class="button-effect text-black dark:text-white mr-4 flex items-center px-4 py-2 bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
-                <svg width="24px" height="28px" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" stroke-width="1.5">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M1.25 12C1.25 6.06294 6.06294 1.25 12 1.25C17.9371 1.25 22.75 6.06294 22.75 12C22.75 17.9371 17.9371 22.75 12 22.75C6.06294 22.75 1.25 17.9371 1.25 12ZM12 10.75C12.4142 10.75 12.75 11.0858 12.75 11.5V16.5C12.75 16.9142 12.4142 17.25 12 17.25C11.5858 17.25 11.25 16.9142 11.25 16.5V11.5C11.25 11.0858 11.5858 10.75 12 10.75ZM12.5675 8.00075C12.8446 7.69287 12.8196 7.21865 12.5117 6.94156C12.2038 6.66446 11.7296 6.68942 11.4525 6.99731L11.4425 7.00842C11.1654 7.3163 11.1904 7.79052 11.4983 8.06761C11.8062 8.34471 12.2804 8.31975 12.5575 8.01186L12.5675 8.00075Z"></path>
+
+    <footer id="footer-container"
+            class="fixed bottom-0 left-0 w-full bg-gray-900 border-t border-gray-800 flex justify-between items-center p-4">
+        <div class="track-buttons flex items-center space-x-4 mr-10">
+            <button id="queued-tracks-btn"
+                    class="button-effect text-black dark:text-white mr-4 flex items-center px-4 py-2 bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
+                <svg width="24px" height="28px" viewBox="0 0 24 24" fill="currentColor"
+                     xmlns="http://www.w3.org/2000/svg" stroke-width="1.5">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                          d="M1.25 12C1.25 6.06294 6.06294 1.25 12 1.25C17.9371 1.25 22.75 6.06294 22.75 12C22.75 17.9371 17.9371 22.75 12 22.75C6.06294 22.75 1.25 17.9371 1.25 12ZM12 10.75C12.4142 10.75 12.75 11.0858 12.75 11.5V16.5C12.75 16.9142 12.4142 17.25 12 17.25C11.5858 17.25 11.25 16.9142 11.25 16.5V11.5C11.25 11.0858 11.5858 10.75 12 10.75ZM12.5675 8.00075C12.8446 7.69287 12.8196 7.21865 12.5117 6.94156C12.2038 6.66446 11.7296 6.68942 11.4525 6.99731L11.4425 7.00842C11.1654 7.3163 11.1904 7.79052 11.4983 8.06761C11.8062 8.34471 12.2804 8.31975 12.5575 8.01186L12.5675 8.00075Z"></path>
                 </svg>
             </button>
-            <button id="liked-tracks-btn" class="button-effect text-black dark:text-white mr-4 flex items-center px-4 py-2 bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
-                <svg width="24px" height="28px" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg" stroke-width="1.5">
-                    <path fill-rule="evenodd" clip-rule="evenodd" d="M12 1.25C6.06294 1.25 1.25 6.06294 1.25 12C1.25 17.9371 6.06294 22.75 12 22.75C17.9371 22.75 22.75 17.9371 22.75 12C22.75 6.06294 17.9371 1.25 12 1.25ZM7.53044 11.9697C7.23755 11.6768 6.76268 11.6768 6.46978 11.9697C6.17689 12.2626 6.17689 12.7374 6.46978 13.0303L9.46978 16.0303C9.76268 16.3232 10.2376 16.3232 10.5304 16.0303L17.5304 9.03033C17.8233 8.73744 17.8233 8.26256 17.5304 7.96967C17.2375 7.67678 16.7627 7.67678 16.4698 7.96967L10.0001 14.4393L7.53044 11.9697Z"></path>
+            <button id="liked-tracks-btn"
+                    class="button-effect text-black dark:text-white mr-4 flex items-center px-4 py-2 bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
+                <svg width="24px" height="28px" viewBox="0 0 24 24" fill="currentColor"
+                     xmlns="http://www.w3.org/2000/svg" stroke-width="1.5">
+                    <path fill-rule="evenodd" clip-rule="evenodd"
+                          d="M12 1.25C6.06294 1.25 1.25 6.06294 1.25 12C1.25 17.9371 6.06294 22.75 12 22.75C17.9371 22.75 22.75 17.9371 22.75 12C22.75 6.06294 17.9371 1.25 12 1.25ZM7.53044 11.9697C7.23755 11.6768 6.76268 11.6768 6.46978 11.9697C6.17689 12.2626 6.17689 12.7374 6.46978 13.0303L9.46978 16.0303C9.76268 16.3232 10.2376 16.3232 10.5304 16.0303L17.5304 9.03033C17.8233 8.73744 17.8233 8.26256 17.5304 7.96967C17.2375 7.67678 16.7627 7.67678 16.4698 7.96967L10.0001 14.4393L7.53044 11.9697Z"></path>
                 </svg>
             </button>
-            <button id="recent-tracks-btn" class="button-effect text-black dark:text-white mr-4 flex items-center px-4 py-2 bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
-                <svg width="24px" height="28px" stroke-width="1.5" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M3 5H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                    <path d="M3 12H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
-                    <path d="M3 19H21" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path>
+            <button id="recent-tracks-btn"
+                    class="button-effect text-black dark:text-white mr-4 flex items-center px-4 py-2 bg-transparent border-none focus:outline-none focus:ring-2 focus:ring-purple-600 focus:ring-opacity-50">
+                <svg width="24px" height="28px" stroke-width="1.5" viewBox="0 0 24 24" fill="currentColor"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 5H21" stroke="currentColor" stroke-width="1.5"
+                          stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M3 12H21" stroke="currentColor" stroke-width="1.5"
+                          stroke-linecap="round" stroke-linejoin="round"></path>
+                    <path d="M3 19H21" stroke="currentColor" stroke-width="1.5"
+                          stroke-linecap="round" stroke-linejoin="round"></path>
                 </svg>
             </button>
         </div>
-        <div class="footer-content flex items-center space-x-6">
+        <div class="footer-content flex items-center space-x-6 mr-6">
             <!-- Track info and image -->
             <div class="w-20 h-20 flex-none rounded-full overflow-hidden shadow-lg">
-                <img id='footer-album-art'src="{{ url_for('static', filename='images/logo.png') }}" alt="Album Art" class="w-full h-full object-cover" />
+                <img id="footer-album-art"
+                     src="{{ url_for('static', filename='images/logo.png') }}"
+                     alt="Album Art" class="w-full h-full object-cover" />
             </div>
             <div class="flex flex-col">
                 <h1 id="footer-track" class="text-white text-lg font-medium">Track Name</h1>
                 <p id="footer-artist" class="artist-name text-violet-600 text-xl font-bold">Artist Name</p>
             </div>
         </div>
-    
-        <!-- Progress bar -->
+
+        <!-- Progress Bar -->
         <div class="progress-bar-container w-1/2 h-2 bg-gray-800 rounded-full relative">
-            <div id="progress-bar" class="rounded-full"></div>
-            <div id="current-time" class="time-display left-0 text-black dark:text-white">0:00</div> <!-- Current position -->
-            <div id="remaining-time" class="time-display right-0 text-black dark:text-white">-0:00</div> <!-- Remaining duration -->
+            <input
+                id="progress-bar"
+                type="range"
+                class="absolute w-full h-full opacity-0 z-10 cursor-pointer"
+                min="0"
+                max="100"
+                step="1"
+                value="0"
+            />
+            <div class="progress-track absolute top-0 left-0 w-full h-full bg-gray-700 rounded-full"></div>
+            <div class="progress-fill absolute top-0 left-0 h-full bg-purple-600 rounded-full"></div>
+            <div class="progress-thumb absolute w-4 h-4 bg-white rounded-full shadow-md -top-1 transform -translate-x-2"></div>
+            <div id="current-time" class="time-display left-0 text-black dark:text-white">0:00</div>
+            <div id="remaining-time" class="time-display right-0 text-black dark:text-white">-0:00</div>
         </div>
-        
-        <!-- Player controls and progress bar -->
-        <div class="player-controls space-x-2">
-            <button id="prev-btn" class="control-btn button-effect text-black dark:text-white" data-control="prev">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M8 11.3333L18.2227 4.51823C18.4524 4.36506 18.7628 4.42714 18.916 4.65691C18.9708 4.73904 19 4.83555 19 4.93426V19.0657C19 19.3419 18.7761 19.5657 18.5 19.5657C18.4013 19.5657 18.3048 19.5365 18.2227 19.4818L8 12.6667V19C8 19.5523 7.55228 20 7 20C6.44772 20 6 19.5523 6 19V5C6 4.44772 6.44772 4 7 4C7.55228 4 8 4.44772 8 5V11.3333Z"></path></svg>
+        <div class="player-controls space-x-2 ml-6">
+            <button id="prev-btn"
+                    class="control-btn button-effect text-black dark:text-white"
+                    data-control="prev">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                     <path d="M8 11.3333L18.2227 4.51823C18.4524 4.36506 18.7628 4.42714 18.916 4.65691C18.9708 4.73904 19 4.83555 19 4.93426V19.0657C19 19.3419 18.7761 19.5657 18.5 19.5657C18.4013 19.5657 18.3048 19.5365 18.2227 19.4818L8 12.6667V19C8 19.5523 7.55228 20 7 20C6.44772 20 6 19.5523 6 19V5C6 4.44772 6.44772 4 7 4C7.55228 4 8 4.44772 8 5V11.3333Z"></path></svg>
             </button>
-            <button id="play-pause-btn" class="control-btn button-effect text-black dark:text-white" data-control="toggle-play">Play</button>
-            <button id="next-btn" class="control-btn  button-effect text-black dark:text-white" data-control="next">
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor"><path d="M16 12.6667L5.77735 19.4818C5.54759 19.6349 5.23715 19.5729 5.08397 19.3431C5.02922 19.261 5 19.1645 5 19.0657V4.93426C5 4.65812 5.22386 4.43426 5.5 4.43426C5.59871 4.43426 5.69522 4.46348 5.77735 4.51823L16 11.3333V5C16 4.44772 16.4477 4 17 4C17.5523 4 18 4.44772 18 5V19C18 19.5523 17.5523 20 17 20C16.4477 20 16 19.5523 16 19V12.6667Z"></path></svg>
+            <button id="play-pause-btn"
+                    class="control-btn button-effect text-black dark:text-white"
+                    data-control="toggle-play">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                    <path d="M8 5v14l11-7z"/>
+                </svg>
+            </button>
+            <button id="next-btn"
+                    class="control-btn button-effect text-black dark:text-white"
+                    data-control="next">
+                <svg xmlns="http://www.w3.org/2000/svg"
+                     viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6">
+                    <path d="M16 12.6667L5.77735 19.4818C5.54759 19.6349 5.23715 19.5729 5.08397 19.3431C5.02922 19.261 5 19.1645 5 19.0657V4.93426C5 4.65812 5.22386 4.43426 5.5 4.43426C5.59871 4.43426 5.69522 4.46348 5.77735 4.51823L16 11.3333V5C16 4.44772 16.4477 4 17 4C17.5523 4 18 4.44772 18 5V19C18 19.5523 17.5523 20 17 20C16.4477 20 16 19.5523 16 19V12.6667Z"></path>
+                </svg>
             </button>
             <button class="footer-toggle button-effect">⇵</button>
-            <input type="range" id="volume-slider" class="volume-slider" min="0" max="100" value="100" title="Volume">
-    </div>
+            <input type="range" id="volume-slider" class="volume-slider ml-6"
+                   min="0" max="100" value="100" title="Volume">
+        </div>
     </footer>
 </body>
 </html>

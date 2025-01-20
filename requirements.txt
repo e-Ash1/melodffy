@@ -1,10 +1,11 @@
 Flask
-Flask_SQLAlchemy
-psycopg2-binary
-gunicorn
-uvicorn
-asgiref
+flask_sqlalchemy
+flask_migrate
+flask_login
+flask_cors
 jinja2
+postgres
+psycopg2-binary
 python-dotenv
 requests
 requests_oauthlib

@@ -3,6 +3,7 @@ flask_sqlalchemy
 flask_migrate
 flask_login
 flask_cors
+gunicorn
 jinja2
 postgres
 psycopg2-binary
